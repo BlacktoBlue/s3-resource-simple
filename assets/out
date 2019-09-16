@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Resource Impl: http://concourse.ci/implementing-resources.html#out:-update-a-resource.
 set -e
@@ -41,9 +41,9 @@ if [ -z "$s3Source" ];
 then
   eval aws s3 sync $source "s3://$bucket/$path" $options
 else
-  eval aws s3 sync $s3Source "s3://$bucket/$path" $options
+  eval aws s3 sync "$source/$s3Source" "s3://$bucket/$path" $options
 fi
-
+set +x
 echo "...done."
 
 source "$(dirname $0)/emit.sh" >&3
