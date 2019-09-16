@@ -7,7 +7,7 @@ resource_types:
 - name: s3-upload
   type: docker-image
   source:
-    repository: 18fgsa/s3-resource-simple
+    repository: blackroblue/s3-resource-simple
 resources:
 - name: scripts
   type: git
@@ -25,3 +25,5 @@ jobs:
   plan:
   - get: scripts
   - put: s3-bucket
+      params:
+        source: folder

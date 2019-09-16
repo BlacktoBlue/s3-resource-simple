@@ -4,5 +4,8 @@
     "secret_access_key": "",
     "bucket": "",
     "options": []
-  }
+  },
+  "params":{
+    "source" : ""
+ }
 }
