@@ -8,7 +8,7 @@ exec 1>&2 # redirect all output to stderr for logging
 
 source=$1
 
-if [ -z "$source" ]; then
+if [[ -z "$source" ]]; then
   echo "usage: $0 </full/path/to/dir>"
   exit 1
 fi
@@ -20,7 +20,8 @@ bucket=$(echo "$payload" | jq -r '.source.bucket')
 path=$(echo "$payload" | jq -r '.source.path // ""')
 options=$(echo "$payload" | jq -r '.source.options // [] | join(" ")')
 
-s3Source=$(echo "$payload" | jq -r '.params.source // ""')
+localFolder=$(echo "$payload" | jq -r '.params.localFolder // ""')
+bucketFolder=$(echo "$payload" | jq -r '.params.bucketFolder // ""')
 
 # export for `aws` cli
 AWS_ACCESS_KEY_ID=$(echo "$payload" | jq -r '.source.access_key_id // empty')
@@ -28,22 +29,28 @@ AWS_SECRET_ACCESS_KEY=$(echo "$payload" | jq -r '.source.secret_access_key // em
 AWS_DEFAULT_REGION=$(echo "$payload" | jq -r '.source.region // empty')
 
 # Due to precedence rules, must be unset to support AWS IAM Roles.
-if [ -n "$AWS_ACCESS_KEY_ID" ] && [ -n "$AWS_SECRET_ACCESS_KEY" ]; then
+if [[ -n "$AWS_ACCESS_KEY_ID" ]] && [[ -n "$AWS_SECRET_ACCESS_KEY" ]]; then
   export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
   export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 fi
 
 # Export AWS_DEFAULT_REGION if set
-[ -n "$AWS_DEFAULT_REGION" ] && export AWS_DEFAULT_REGION
+[[ -n "$AWS_DEFAULT_REGION" ]] && export AWS_DEFAULT_REGION
 
 echo "Uploading to S3..."
-if [ -z "$s3Source" ]; 
-then
-  eval aws s3 sync $source "s3://$bucket/$path" $options
-else
-  eval aws s3 sync "$source/$s3Source" "s3://$bucket/$path" $options
+
+set -x
+localSource=$source/$localFolder
+s3destination="s3://$bucket"
+if [[ -n "$path" ]]; then
+  s3destination="$s3destination/$path"
 fi
-set +x
+if [[ -n "$bucketFolder" ]]; then
+  s3destination="$s3destination/$bucketFolder"
+fi
+
+eval aws s3 sync $localSource $s3destination $options
 echo "...done."
+set +x
 
 source "$(dirname $0)/emit.sh" >&3

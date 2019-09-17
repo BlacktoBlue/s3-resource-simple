@@ -6,6 +6,8 @@
     "options": []
   },
   "params":{
-    "source" : ""
+    "bucketFolder" : "",
+    "localFolder": "",
+    "skipDownload": ""
  }
 }
