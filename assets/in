@@ -2,6 +2,7 @@
 
 # Resource Impl: http://concourse.ci/implementing-resources.html#in:-fetch-a-given-resource
 set -e
+set -x
 
 exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
@@ -19,10 +20,10 @@ payload=`cat`
 bucket=$(echo "$payload" | jq -r '.source.bucket')
 path=$(echo "$payload" | jq -r '.source.path // ""')
 options=$(echo "$payload" | jq -r '.source.options // [] | join(" ")')
+skipDownload=$(echo "$payload" | jq -r '.source.skipDownload')
 
 localFolder=$(echo "$payload" | jq -r '.params.localFolder // ""')
 bucketFolder=$(echo "$payload" | jq -r '.params.bucketFolder // ""')
-skipDownload=$(echo "$payload" | jq -r '.source.skipDownload')
 
 # export for `aws` cli
 AWS_ACCESS_KEY_ID=$(echo "$payload" | jq -r '.source.access_key_id // empty')

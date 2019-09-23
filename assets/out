@@ -49,7 +49,7 @@ if [[ -n "$bucketFolder" ]]; then
   s3destination="$s3destination/$bucketFolder"
 fi
 
-eval aws s3 sync $localSource $s3destination $options
+eval aws s3 cp $localSource $s3destination $options
 echo "...done."
 set +x
 
