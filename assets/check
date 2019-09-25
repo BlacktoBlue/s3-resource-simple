@@ -3,7 +3,6 @@
 # http://concourse.ci/implementing-resources.html#resource-check
 
 set -e
-set -x
 
 # parse incoming config data
 payload=`cat`
