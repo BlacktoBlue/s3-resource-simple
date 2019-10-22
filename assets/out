@@ -39,7 +39,6 @@ fi
 
 echo "Uploading to S3..."
 
-set -x
 localSource=$source/$localFolder
 s3destination="s3://$bucket"
 if [[ -n "$path" ]]; then
@@ -51,6 +50,5 @@ fi
 
 eval aws s3 cp $localSource $s3destination $options
 echo "...done."
-set +x
 
 source "$(dirname $0)/emit.sh" >&3
